@@ -13,10 +13,7 @@ import com.bookstore.bookstore.utils.GenericUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -32,7 +29,7 @@ public class BookService implements IBookService {
     private IBookdao bookdao;
 
     @Autowired
-    MediaPostService mediaPostService;
+    private MediaPostService mediaPostService;
 
     @Override
     public Book addBook(BookCreationRequest bookCreationRequest) throws DbException {
@@ -75,8 +72,11 @@ public class BookService implements IBookService {
     @Override
     public List<String> searchMedia(String isbn) throws Exception {
         List<Book> bookList = bookdao.getByIsbn(isbn);
+        if (bookList.isEmpty()) {
+            throw new IllegalArgumentException("invalid isbn");
+        }
         List<MediaPost> mediaPosts = mediaPostService.getMediaPosts();
-        List<String> bookTitles = Optional.ofNullable(bookList).orElseGet(Collections::emptyList).stream()
+        List<String> bookTitles = bookList.stream()
                 .filter(book -> !GenericUtils.isStringEmpty(book.getTitle().trim()))
                 .map(book -> book.getTitle().trim()).collect(Collectors.toList());
 

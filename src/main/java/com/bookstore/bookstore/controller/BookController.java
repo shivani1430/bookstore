@@ -1,10 +1,14 @@
 package com.bookstore.bookstore.controller;
 
 import com.bookstore.bookstore.model.Book;
+import com.bookstore.bookstore.model.Order;
 import com.bookstore.bookstore.pojo.BaseResponse;
 import com.bookstore.bookstore.pojo.BookCreationRequest;
 import com.bookstore.bookstore.pojo.BookSearchRequest;
+import com.bookstore.bookstore.pojo.OrderCreationDocument;
 import com.bookstore.bookstore.service.IBookService;
+import com.bookstore.bookstore.service.IOrderService;
+import com.bookstore.bookstore.utils.GenericUtils;
 import com.bookstore.bookstore.validators.BookRequestValidator;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -26,6 +30,9 @@ public class BookController {
 
     @Autowired
     private IBookService bookService;
+
+    @Autowired
+    private IOrderService orderService;
 
     @Autowired
     private BookRequestValidator inputValidator;
@@ -65,13 +72,35 @@ public class BookController {
     @GetMapping(value = "/media_search")
     public BaseResponse mediaSearch(@RequestParam(value = "isbn") final String isbn) {
         log.info("BookController:mediaSearch - isbn : {}", isbn);
-        try{
+        try {
+            if (GenericUtils.isStringEmpty(isbn)) {
+                throw new IllegalArgumentException("invalid isbn");
+            }
             List<String> postTitles = bookService.searchMedia(isbn);
             return new BaseResponse(postTitles);
+        } catch (IllegalArgumentException ex) {
+            log.error("BookController:mediaSearch - IllegalArgumentException with isbn : {}, exception : {} ", isbn, ex.getMessage());
+            return new BaseResponse(ex.getMessage(), HttpStatus.BAD_REQUEST);
         } catch (Exception ex) {
             log.error("BookController:mediaSearch - Exception with isbn : {}, exception : {} ", isbn, ex.getMessage());
             return new BaseResponse(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
+    }
+
+    @PostMapping(value = "/buy")
+    public BaseResponse createOrder(@RequestBody OrderCreationDocument orderCreationDocument) {
+        log.info("BookController:createOrder - request : {}", orderCreationDocument);
+        try {
+            inputValidator.validate(orderCreationDocument);
+            Order order = orderService.createOrder(orderCreationDocument);
+            return new BaseResponse(order);
+        } catch (IllegalArgumentException ex) {
+            log.error("BookController:createOrder - IllegalArgumentException while adding order : {}, exception : {} ", orderCreationDocument, ex.getMessage());
+            return new BaseResponse(ex.getMessage(), HttpStatus.BAD_REQUEST);
+        } catch (Exception ex) {
+            log.error("BookController:createOrder - Exception while adding order : {}, exception : {} ", orderCreationDocument, ex.getMessage());
+            return new BaseResponse(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 }
