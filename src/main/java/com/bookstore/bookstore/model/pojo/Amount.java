@@ -1,7 +1,9 @@
 package com.bookstore.bookstore.model.pojo;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * @author shivani_reddy
@@ -9,6 +11,8 @@ import lombok.Data;
 
 @Data
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class Amount {
 
     private double amount;

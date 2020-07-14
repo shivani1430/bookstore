@@ -2,6 +2,7 @@ package com.bookstore.bookstore.model;
 
 import com.bookstore.bookstore.model.pojo.Amount;
 import com.bookstore.bookstore.model.pojo.Status;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -20,6 +21,8 @@ import java.util.Date;
 @Data
 @Document(collection = "books")
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class Book {
     @Id
     private String id;

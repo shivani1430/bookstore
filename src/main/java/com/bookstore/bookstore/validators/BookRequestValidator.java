@@ -14,8 +14,9 @@ import org.springframework.stereotype.Component;
 public class BookRequestValidator {
 
     public void validate(BookCreationRequest request) {
-        if (GenericUtils.isStringEmpty(request.getIsbn())) {
-            throw new IllegalArgumentException("isbn is missing");
+        if (GenericUtils.isStringEmpty(request.getIsbn())
+                || GenericUtils.isStringEmpty(request.getTitle())) {
+            throw new IllegalArgumentException("isbn or title is missing");
         }
         if (request.getPrice() == null) {
             throw new IllegalArgumentException("price is missing");

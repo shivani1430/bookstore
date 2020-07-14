@@ -6,13 +6,20 @@ import com.bookstore.bookstore.model.Book;
 import com.bookstore.bookstore.pojo.BookCreationRequest;
 import com.bookstore.bookstore.pojo.BookSearchRequest;
 import com.bookstore.bookstore.pojo.BookUpdationRequest;
+import com.bookstore.bookstore.pojo.MediaPost;
 import com.bookstore.bookstore.repository.IBookdao;
 import com.bookstore.bookstore.service.IBookService;
+import com.bookstore.bookstore.utils.GenericUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * @author shivani_reddy
@@ -22,7 +29,10 @@ import java.util.List;
 public class BookService implements IBookService {
 
     @Autowired
-    IBookdao bookdao;
+    private IBookdao bookdao;
+
+    @Autowired
+    MediaPostService mediaPostService;
 
     @Override
     public Book addBook(BookCreationRequest bookCreationRequest) throws DbException {
@@ -63,8 +73,22 @@ public class BookService implements IBookService {
     }
 
     @Override
-    public List<String> searchMedia(String isbn) {
+    public List<String> searchMedia(String isbn) throws Exception {
         List<Book> bookList = bookdao.getByIsbn(isbn);
-        return null;
+        List<MediaPost> mediaPosts = mediaPostService.getMediaPosts();
+        List<String> bookTitles = Optional.ofNullable(bookList).orElseGet(Collections::emptyList).stream()
+                .filter(book -> !GenericUtils.isStringEmpty(book.getTitle().trim()))
+                .map(book -> book.getTitle().trim()).collect(Collectors.toList());
+
+        String regex = String.format("(?i)(%s)", String.join("|", bookTitles));
+        Pattern pt = Pattern.compile(regex);
+
+        List<String> postTitles = Optional.ofNullable(mediaPosts).orElseGet(Collections::emptyList).stream()
+                .filter(mediaPost -> {
+                    Matcher match = pt.matcher(mediaPost.getTitle() + " " + mediaPost.getBody());
+                    return match.find();
+                })
+                .map(MediaPost::getTitle).collect(Collectors.toList());
+        return postTitles;
     }
 }

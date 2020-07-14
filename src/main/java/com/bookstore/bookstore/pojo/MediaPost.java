@@ -1,7 +1,6 @@
 package com.bookstore.bookstore.pojo;
 
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -10,11 +9,11 @@ import lombok.NoArgsConstructor;
  */
 
 @Data
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class BookSearchRequest {
-    private String isbn;
+public class MediaPost {
+    private String userId;
+    private String id;
     private String title;
-    private String author;
+    private String body;
 }

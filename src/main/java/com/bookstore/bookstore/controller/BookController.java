@@ -10,10 +10,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -28,10 +25,10 @@ public class BookController {
     private Logger log = LogManager.getLogger(BookController.class);
 
     @Autowired
-    IBookService bookService;
+    private IBookService bookService;
 
     @Autowired
-    BookRequestValidator inputValidator;
+    private BookRequestValidator inputValidator;
 
     @PostMapping(value = "/add")
     public BaseResponse addBook(@RequestBody BookCreationRequest bookCreationRequest) {
@@ -63,5 +60,18 @@ public class BookController {
             log.error("BookController:search - Exception while searching books : {}, exception : {} ", bookSearchRequest, ex.getMessage());
             return new BaseResponse(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+
+    @GetMapping(value = "/media_search")
+    public BaseResponse mediaSearch(@RequestParam(value = "isbn") final String isbn) {
+        log.info("BookController:mediaSearch - isbn : {}", isbn);
+        try{
+            List<String> postTitles = bookService.searchMedia(isbn);
+            return new BaseResponse(postTitles);
+        } catch (Exception ex) {
+            log.error("BookController:mediaSearch - Exception with isbn : {}, exception : {} ", isbn, ex.getMessage());
+            return new BaseResponse(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
     }
 }

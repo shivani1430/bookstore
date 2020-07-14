@@ -13,6 +13,11 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
@@ -23,7 +28,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class BookServiceTest {
 
     @Autowired
-    IBookService bookService;
+    private IBookService bookService;
 
     @BeforeEach
     void setUp() {
@@ -42,7 +47,7 @@ class BookServiceTest {
                 .build();
         BookCreationRequest bookCreationRequest = BookCreationRequest.builder()
                 .isbn("0987654321")
-                .title("book name")
+                .title("earum")
                 .author("kate night")
                 .description("description1")
                 .price(amount)
@@ -87,5 +92,28 @@ class BookServiceTest {
         } catch (Exception e){
             e.printStackTrace();
         }
+    }
+
+    @Test
+    void searchMedia() {
+        try{
+            List<String> titles= bookService.searchMedia("0987654321");
+            System.out.println("size of media posts : "+titles.size());
+            System.out.println(titles);
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    void regex() {
+        String para = "nisi error delectus possimus ut eligendi vitae placeat eos harum cupiditate facilis reprehenderit voluptatem beatae nmodi ducimus quo illum voluptas eligendi net nobis quia fugit";
+        List<String> stringList = new ArrayList<>();
+        stringList.add("Delectus possimus");
+        stringList.add("FJAKFJDLF");
+        String regex = String.format("(?i)(%s)", String.join("|",stringList));
+        Pattern pt = Pattern.compile(regex);
+        Matcher match = pt.matcher(para);
+        System.out.println(match.find());
     }
 }

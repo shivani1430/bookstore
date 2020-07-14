@@ -18,5 +18,5 @@ public interface IBookService {
     Book updateBook(BookUpdationRequest bookUpdationRequest) throws DbException, NotFoundException;
     Book getBook(String id) throws NotFoundException;
     List<Book> search(BookSearchRequest bookSearchRequest);
-    List<String> searchMedia(String isbn);
+    List<String> searchMedia(String isbn) throws Exception;
 }

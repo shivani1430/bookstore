@@ -3,9 +3,11 @@ package com.bookstore.bookstore.repository.impl;
 import com.bookstore.bookstore.model.Book;
 import com.bookstore.bookstore.pojo.BookSearchRequest;
 import com.bookstore.bookstore.repository.IBookdao;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.mongodb.core.MongoOperations;
 
 import java.util.List;
 
@@ -17,7 +19,10 @@ import java.util.List;
 class BookdaoTest {
 
     @Autowired
-    IBookdao bookdao;
+    private IBookdao bookdao;
+
+    @Autowired
+    private MongoOperations mongoOperations;
 
     @Test
     void search() {
@@ -33,5 +38,12 @@ class BookdaoTest {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    @Test
+    @Disabled
+    void deleteAll() {
+        mongoOperations.dropCollection("books");
+        System.out.println("cleared collection");
     }
 }
