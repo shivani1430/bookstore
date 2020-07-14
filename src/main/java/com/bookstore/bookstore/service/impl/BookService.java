@@ -4,6 +4,7 @@ import com.bookstore.bookstore.exceptions.DbException;
 import com.bookstore.bookstore.exceptions.NotFoundException;
 import com.bookstore.bookstore.model.Book;
 import com.bookstore.bookstore.pojo.BookCreationRequest;
+import com.bookstore.bookstore.pojo.BookSearchRequest;
 import com.bookstore.bookstore.pojo.BookUpdationRequest;
 import com.bookstore.bookstore.repository.IBookdao;
 import com.bookstore.bookstore.service.IBookService;
@@ -11,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * @author shivani_reddy
@@ -53,5 +55,16 @@ public class BookService implements IBookService {
     @Override
     public Book getBook(String id) throws NotFoundException {
         return bookdao.get(id);
+    }
+
+    @Override
+    public List<Book> search(BookSearchRequest bookSearchRequest) {
+        return bookdao.search(bookSearchRequest);
+    }
+
+    @Override
+    public List<String> searchMedia(String isbn) {
+        List<Book> bookList = bookdao.getByIsbn(isbn);
+        return null;
     }
 }

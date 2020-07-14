@@ -42,8 +42,8 @@ class BookServiceTest {
                 .build();
         BookCreationRequest bookCreationRequest = BookCreationRequest.builder()
                 .isbn("0987654321")
-                .title("Book1")
-                .author("author1")
+                .title("book name")
+                .author("kate night")
                 .description("description1")
                 .price(amount)
                 .status(Status.ACTIVE)

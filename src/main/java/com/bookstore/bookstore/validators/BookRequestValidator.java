@@ -2,7 +2,8 @@ package com.bookstore.bookstore.validators;
 
 import com.bookstore.bookstore.model.pojo.Status;
 import com.bookstore.bookstore.pojo.BookCreationRequest;
-import lombok.NonNull;
+import com.bookstore.bookstore.pojo.BookSearchRequest;
+import com.bookstore.bookstore.utils.GenericUtils;
 import org.springframework.stereotype.Component;
 
 /**
@@ -13,7 +14,7 @@ import org.springframework.stereotype.Component;
 public class BookRequestValidator {
 
     public void validate(BookCreationRequest request) {
-        if (request.getIsbn() == null || request.getIsbn().isEmpty()) {
+        if (GenericUtils.isStringEmpty(request.getIsbn())) {
             throw new IllegalArgumentException("isbn is missing");
         }
         if (request.getPrice() == null) {
@@ -27,4 +28,13 @@ public class BookRequestValidator {
             request.setStatus(Status.ACTIVE);
         }
     }
+
+    public void validate(BookSearchRequest bookSearchRequest) {
+        if (GenericUtils.isStringEmpty(bookSearchRequest.getIsbn())
+                && GenericUtils.isStringEmpty(bookSearchRequest.getAuthor())
+                && GenericUtils.isStringEmpty(bookSearchRequest.getTitle())) {
+            throw new IllegalArgumentException("Missing token");
+        }
+    }
+
 }
