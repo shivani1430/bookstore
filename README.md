@@ -7,7 +7,16 @@ Spring Boot based implementation of a Bookstore.
 * JDK 1.8
 * Maven 3.2+
 * IDE ( IntelliJ IDEA or Spring Tool Suite (STS))
-* mongo server running in the background
+* mongo
+
+To run the application:
+
+* start mongo server
+* run the below command
+
+```
+  mvn clean install
+```
 
 ### Add a Book to the store
 curl --location --request POST 'http://localhost:8080/book/add' \
