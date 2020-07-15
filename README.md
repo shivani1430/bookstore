@@ -2,6 +2,8 @@
 
 Spring Boot based implementation of a Bookstore.
 
+![Book Store Flow](/docs/flow.png "Book Store Flow")
+
 ## Requirments
 
 * JDK 1.8
