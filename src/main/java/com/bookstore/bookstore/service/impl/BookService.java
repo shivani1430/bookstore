@@ -1,13 +1,14 @@
 package com.bookstore.bookstore.service.impl;
 
+import com.bookstore.bookstore.builders.SearchRequestBuilder;
 import com.bookstore.bookstore.exceptions.DbException;
 import com.bookstore.bookstore.exceptions.NotFoundException;
 import com.bookstore.bookstore.model.Book;
-import com.bookstore.bookstore.pojo.BookCreationRequest;
-import com.bookstore.bookstore.pojo.BookSearchRequest;
-import com.bookstore.bookstore.pojo.BookUpdationRequest;
+import com.bookstore.bookstore.pojo.apiRequest.BookCreationRequest;
+import com.bookstore.bookstore.pojo.apiRequest.BookSearchRequest;
+import com.bookstore.bookstore.pojo.apiRequest.BookUpdationRequest;
 import com.bookstore.bookstore.pojo.MediaPost;
-import com.bookstore.bookstore.repository.IBookdao;
+import com.bookstore.bookstore.repository.Idao;
 import com.bookstore.bookstore.service.IBookService;
 import com.bookstore.bookstore.utils.GenericUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +27,7 @@ import java.util.stream.Collectors;
 public class BookService implements IBookService {
 
     @Autowired
-    private IBookdao bookdao;
+    private Idao<Book> bookdao;
 
     @Autowired
     private MediaPostService mediaPostService;
@@ -65,13 +66,13 @@ public class BookService implements IBookService {
     }
 
     @Override
-    public List<Book> search(BookSearchRequest bookSearchRequest) {
-        return bookdao.search(bookSearchRequest);
+    public List<Book> search(BookSearchRequest bookSearchRequest) throws DbException {
+        return bookdao.search(SearchRequestBuilder.build(bookSearchRequest));
     }
 
     @Override
     public List<String> searchMedia(String isbn) throws Exception {
-        List<Book> bookList = bookdao.getByIsbn(isbn);
+        List<Book> bookList = bookdao.search(SearchRequestBuilder.build(isbn));
         if (bookList.isEmpty()) {
             throw new IllegalArgumentException("invalid isbn");
         }
@@ -83,12 +84,11 @@ public class BookService implements IBookService {
         String regex = String.format("(?i)(%s)", String.join("|", bookTitles));
         Pattern pt = Pattern.compile(regex);
 
-        List<String> postTitles = Optional.ofNullable(mediaPosts).orElseGet(Collections::emptyList).stream()
+        return Optional.ofNullable(mediaPosts).orElseGet(Collections::emptyList).stream()
                 .filter(mediaPost -> {
                     Matcher match = pt.matcher(mediaPost.getTitle() + " " + mediaPost.getBody());
                     return match.find();
                 })
                 .map(MediaPost::getTitle).collect(Collectors.toList());
-        return postTitles;
     }
 }

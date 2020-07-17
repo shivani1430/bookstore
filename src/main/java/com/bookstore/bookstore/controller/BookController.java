@@ -2,10 +2,10 @@ package com.bookstore.bookstore.controller;
 
 import com.bookstore.bookstore.model.Book;
 import com.bookstore.bookstore.model.Order;
-import com.bookstore.bookstore.pojo.BaseResponse;
-import com.bookstore.bookstore.pojo.BookCreationRequest;
-import com.bookstore.bookstore.pojo.BookSearchRequest;
-import com.bookstore.bookstore.pojo.OrderCreationDocument;
+import com.bookstore.bookstore.pojo.apiResponse.BaseResponse;
+import com.bookstore.bookstore.pojo.apiRequest.BookCreationRequest;
+import com.bookstore.bookstore.pojo.apiRequest.BookSearchRequest;
+import com.bookstore.bookstore.pojo.apiRequest.OrderCreationDocument;
 import com.bookstore.bookstore.service.IBookService;
 import com.bookstore.bookstore.service.IOrderService;
 import com.bookstore.bookstore.utils.GenericUtils;

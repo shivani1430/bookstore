@@ -2,13 +2,12 @@ package com.bookstore.bookstore.service.impl;
 
 import com.bookstore.bookstore.model.Order;
 import com.bookstore.bookstore.model.pojo.User;
-import com.bookstore.bookstore.pojo.OrderCreationDocument;
+import com.bookstore.bookstore.pojo.apiRequest.OrderCreationDocument;
 import com.bookstore.bookstore.service.IOrderService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @author shivani_reddy

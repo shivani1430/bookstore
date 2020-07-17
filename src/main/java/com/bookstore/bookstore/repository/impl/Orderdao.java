@@ -1,20 +1,24 @@
 package com.bookstore.bookstore.repository.impl;
 
 import com.bookstore.bookstore.exceptions.DbException;
+import com.bookstore.bookstore.exceptions.NotFoundException;
 import com.bookstore.bookstore.model.Order;
-import com.bookstore.bookstore.repository.IOrderdao;
+import com.bookstore.bookstore.pojo.search.SearchRequest;
+import com.bookstore.bookstore.repository.Idao;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 /**
  * @author shivani_reddy
  */
 
 @Repository
-public class Orderdao implements IOrderdao {
+public class Orderdao implements Idao<Order> {
 
     private Logger log = LogManager.getLogger(Orderdao.class);
 
@@ -30,5 +34,20 @@ public class Orderdao implements IOrderdao {
             log.error("Orderdao:insert - insert operation failed for :{}, error : {}", order, e.getMessage());
             throw new DbException("inert operation failed");
         }
+    }
+
+    @Override
+    public Order save(Order object) throws DbException {
+        return null;
+    }
+
+    @Override
+    public Order get(String id) throws NotFoundException {
+        return null;
+    }
+
+    @Override
+    public List<Order> search(SearchRequest searchRequest) throws DbException {
+        return null;
     }
 }

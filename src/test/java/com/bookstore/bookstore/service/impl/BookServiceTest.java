@@ -4,8 +4,8 @@ import com.bookstore.bookstore.model.Book;
 import com.bookstore.bookstore.model.pojo.Amount;
 import com.bookstore.bookstore.model.pojo.Currency;
 import com.bookstore.bookstore.model.pojo.Status;
-import com.bookstore.bookstore.pojo.BookCreationRequest;
-import com.bookstore.bookstore.pojo.BookUpdationRequest;
+import com.bookstore.bookstore.pojo.apiRequest.BookCreationRequest;
+import com.bookstore.bookstore.pojo.apiRequest.BookUpdationRequest;
 import com.bookstore.bookstore.service.IBookService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -18,7 +18,6 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @author shivani_reddy

@@ -1,14 +1,19 @@
 package com.bookstore.bookstore.repository.impl;
 
 import com.bookstore.bookstore.model.Book;
-import com.bookstore.bookstore.pojo.BookSearchRequest;
-import com.bookstore.bookstore.repository.IBookdao;
+import com.bookstore.bookstore.pojo.search.RegexFilter;
+import com.bookstore.bookstore.pojo.search.SearchField;
+import com.bookstore.bookstore.pojo.search.SearchRequest;
+import com.bookstore.bookstore.pojo.search.StringValueFilter;
+import com.bookstore.bookstore.repository.Idao;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.mongodb.core.MongoOperations;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -19,20 +24,24 @@ import java.util.List;
 class BookdaoTest {
 
     @Autowired
-    private IBookdao bookdao;
+    private Idao<Book> bookdao;
 
     @Autowired
     private MongoOperations mongoOperations;
 
     @Test
     void search() {
-        BookSearchRequest bookSearchRequest = BookSearchRequest.builder()
-                .isbn("0987654321")
-                .author("ate")
-                .title("book")
+        List<StringValueFilter> stringValueFilters = new ArrayList<>();
+        stringValueFilters.add(new StringValueFilter(SearchField.ISBN, Collections.singletonList("0987654321")));
+        List<RegexFilter> regexFilters = new ArrayList<>();
+        regexFilters.add(new RegexFilter(SearchField.TITLE, "book"));
+        regexFilters.add(new RegexFilter(SearchField.AUTHOR, "ate"));
+        SearchRequest searchRequest = SearchRequest.builder()
+                .stringValueFilters(stringValueFilters)
+                .regexFilters(regexFilters)
                 .build();
         try {
-            List<Book> books = bookdao.search(bookSearchRequest);
+            List<Book> books = bookdao.search(searchRequest);
             System.out.println("output size: " + books.size());
             System.out.println(books);
         } catch (Exception e) {

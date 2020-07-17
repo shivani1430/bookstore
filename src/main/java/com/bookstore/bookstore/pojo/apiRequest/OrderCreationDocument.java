@@ -1,4 +1,4 @@
-package com.bookstore.bookstore.pojo;
+package com.bookstore.bookstore.pojo.apiRequest;
 
 import com.bookstore.bookstore.model.pojo.User;
 import lombok.AllArgsConstructor;

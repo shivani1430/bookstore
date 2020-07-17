@@ -2,8 +2,8 @@ package com.bookstore.bookstore.service.impl;
 
 import com.bookstore.bookstore.exceptions.DbException;
 import com.bookstore.bookstore.model.Order;
-import com.bookstore.bookstore.pojo.OrderCreationDocument;
-import com.bookstore.bookstore.repository.IOrderdao;
+import com.bookstore.bookstore.pojo.apiRequest.OrderCreationDocument;
+import com.bookstore.bookstore.repository.Idao;
 import com.bookstore.bookstore.service.IOrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,7 +18,7 @@ import java.util.Date;
 public class OrderService implements IOrderService {
 
     @Autowired
-    private IOrderdao orderdao;
+    private Idao<Order> orderdao;
 
     @Override
     public Order createOrder(OrderCreationDocument orderCreationDocument) throws DbException {

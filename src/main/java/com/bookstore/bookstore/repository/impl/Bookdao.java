@@ -3,15 +3,14 @@ package com.bookstore.bookstore.repository.impl;
 import com.bookstore.bookstore.exceptions.DbException;
 import com.bookstore.bookstore.exceptions.NotFoundException;
 import com.bookstore.bookstore.model.Book;
-import com.bookstore.bookstore.model.pojo.Status;
-import com.bookstore.bookstore.pojo.BookSearchRequest;
-import com.bookstore.bookstore.repository.IBookdao;
+import com.bookstore.bookstore.pojo.search.SearchRequest;
+import com.bookstore.bookstore.queries.MongoQuery;
+import com.bookstore.bookstore.repository.Idao;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.data.mongodb.core.MongoOperations;
-import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Repository;
 
@@ -23,7 +22,7 @@ import java.util.List;
 
 
 @Repository
-public class Bookdao implements IBookdao {
+public class Bookdao implements Idao<Book> {
 
     private Logger log = LogManager.getLogger(Bookdao.class);
 
@@ -43,7 +42,6 @@ public class Bookdao implements IBookdao {
 
     @Override
     public Book save(Book book) throws DbException {
-        // book.setUpdatedAt(new Date());
         try {
             book = mongoOperations.save(book);
             if (book == null) {
@@ -71,29 +69,15 @@ public class Bookdao implements IBookdao {
     }
 
     @Override
-    public List<Book> getByIsbn(String id) {
-        Query searchQuery = Query.query(Criteria.where("isbn").is(id));
-        return mongoOperations.find(searchQuery, Book.class);
-    }
-
-    @Override
-    public List<Book> search(BookSearchRequest bookSearchRequest) {
-        Query searchQuery = buildQuery(bookSearchRequest);
-        return mongoOperations.find(searchQuery, Book.class);
-    }
-
-    private Query buildQuery(BookSearchRequest bookSearchRequest) {
-        Query searchQuery = Query.query(Criteria.where("status").is(Status.ACTIVE.toString()));
-        if (bookSearchRequest.getIsbn() != null && !bookSearchRequest.getIsbn().isEmpty()) {
-            searchQuery.addCriteria(Criteria.where("isbn").is(bookSearchRequest.getIsbn()));
+    public List<Book> search(SearchRequest searchRequest) throws DbException {
+        Query searchQuery = MongoQuery.buildQuery(searchRequest);
+        try {
+            List<Book> books = mongoOperations.find(searchQuery, Book.class);
+            return books;
+        } catch (Exception e) {
+            log.error("Bookdao:search - search failed for :{}, error : {}", searchRequest, e.getMessage());
+            throw new DbException("search failed");
         }
-        if (bookSearchRequest.getTitle() != null && !bookSearchRequest.getTitle().isEmpty()) {
-            searchQuery.addCriteria(Criteria.where("title").regex(bookSearchRequest.getTitle()));
-        }
-        if (bookSearchRequest.getAuthor() != null && !bookSearchRequest.getAuthor().isEmpty()) {
-            searchQuery.addCriteria(Criteria.where("author").regex(bookSearchRequest.getAuthor()));
-        }
-        return searchQuery;
     }
 
 

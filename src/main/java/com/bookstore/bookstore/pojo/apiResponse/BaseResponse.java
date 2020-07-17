@@ -1,4 +1,4 @@
-package com.bookstore.bookstore.pojo;
+package com.bookstore.bookstore.pojo.apiResponse;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

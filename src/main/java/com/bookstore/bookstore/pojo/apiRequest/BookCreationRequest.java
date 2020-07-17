@@ -1,5 +1,7 @@
-package com.bookstore.bookstore.pojo;
+package com.bookstore.bookstore.pojo.apiRequest;
 
+import com.bookstore.bookstore.model.pojo.Amount;
+import com.bookstore.bookstore.model.pojo.Status;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -13,8 +15,12 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class BookSearchRequest {
+public class BookCreationRequest {
+
     private String isbn;
     private String title;
     private String author;
+    private String description;
+    private Amount price;
+    private Status status;
 }
