@@ -2,7 +2,7 @@
 
 Spring Boot based implementation of a Bookstore.
 
-![Book Store Flow](/docs/flow1.png "Book Store Flow")
+![Book Store Flow](/docs/flow2.png "Book Store Flow")
 
 ## Requirments
 
