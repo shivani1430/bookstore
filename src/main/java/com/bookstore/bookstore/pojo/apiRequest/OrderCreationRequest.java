@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class OrderCreationDocument {
+public class OrderCreationRequest {
 
     private User user;
     private String bookId;

@@ -3,18 +3,16 @@ package com.bookstore.bookstore.validators;
 import com.bookstore.bookstore.model.pojo.Status;
 import com.bookstore.bookstore.pojo.apiRequest.BookCreationRequest;
 import com.bookstore.bookstore.pojo.apiRequest.BookSearchRequest;
-import com.bookstore.bookstore.pojo.apiRequest.OrderCreationDocument;
+import com.bookstore.bookstore.pojo.apiRequest.OrderCreationRequest;
 import com.bookstore.bookstore.utils.GenericUtils;
-import org.springframework.stereotype.Component;
 
 /**
  * @author shivani_reddy
  */
 
-@Component
-public class BookRequestValidator {
+public class RequestValidator {
 
-    public void validate(BookCreationRequest request) {
+    public static void validate(BookCreationRequest request) {
         if (GenericUtils.isStringEmpty(request.getIsbn())
                 || GenericUtils.isStringEmpty(request.getTitle())) {
             throw new IllegalArgumentException("isbn or title is missing");
@@ -31,7 +29,7 @@ public class BookRequestValidator {
         }
     }
 
-    public void validate(BookSearchRequest bookSearchRequest) {
+    public static void validate(BookSearchRequest bookSearchRequest) {
         if (GenericUtils.isStringEmpty(bookSearchRequest.getIsbn())
                 && GenericUtils.isStringEmpty(bookSearchRequest.getAuthor())
                 && GenericUtils.isStringEmpty(bookSearchRequest.getTitle())) {
@@ -39,7 +37,7 @@ public class BookRequestValidator {
         }
     }
 
-    public void validate(OrderCreationDocument orderCreationDocument) {
+    public static void validate(OrderCreationRequest orderCreationRequest) {
     }
 
 }

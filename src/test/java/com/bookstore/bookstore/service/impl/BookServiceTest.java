@@ -1,116 +1,113 @@
 package com.bookstore.bookstore.service.impl;
 
+import com.bookstore.bookstore.builders.SearchRequestBuilder;
+import com.bookstore.bookstore.exceptions.DbException;
+import com.bookstore.bookstore.exceptions.NotFoundException;
 import com.bookstore.bookstore.model.Book;
-import com.bookstore.bookstore.model.pojo.Amount;
-import com.bookstore.bookstore.model.pojo.Currency;
-import com.bookstore.bookstore.model.pojo.Status;
 import com.bookstore.bookstore.pojo.apiRequest.BookCreationRequest;
 import com.bookstore.bookstore.pojo.apiRequest.BookUpdationRequest;
-import com.bookstore.bookstore.service.IBookService;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import com.bookstore.bookstore.pojo.search.SearchRequest;
+import com.bookstore.bookstore.repository.Idao;
+import com.bookstore.bookstore.testUtils.BookRequestUtil;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
 
 
 /**
  * @author shivani_reddy
  */
 
-@SpringBootTest
-class BookServiceTest {
+@RunWith(SpringRunner.class)
+public class BookServiceTest {
 
-    @Autowired
-    private IBookService bookService;
+    @InjectMocks
+    private BookService bookService;
 
-    @BeforeEach
-    void setUp() {
+    @Mock
+    private Idao<Book> bookdao;
 
-    }
+    @Mock
+    private MediaPostService mediaPostService;
 
-    @AfterEach
-    void tearDown() {
-    }
-
-    @Test
-    void addBook() {
-        Amount amount = Amount.builder()
-                .amount(20.0)
-                .currency(Currency.INR)
-                .build();
-        BookCreationRequest bookCreationRequest = BookCreationRequest.builder()
-                .isbn("0987654321")
-                .title("earum")
-                .author("kate night")
-                .description("description1")
-                .price(amount)
-                .status(Status.ACTIVE)
-                .build();
-        try{
-            Book book = bookService.addBook(bookCreationRequest);
-          System.out.println(book);
-        } catch (Exception e){
-            e.printStackTrace();
-        }
+    @Before
+    public void setUp() throws Exception {
+        when(bookdao.get("5f0d452951b6d6035b06b969")).thenReturn(BookRequestUtil.getBookWithId());
     }
 
     @Test
-    void updateBook() {
-        Amount amount = Amount.builder()
-                .amount(20.0)
-                .currency(Currency.INR)
-                .build();
-        BookUpdationRequest bookUpdationRequest = BookUpdationRequest.builder()
-                .id("5f0d452951b6d6035b06b969")
-                .title("Book1")
-                .author("author2")
-                .description("description2")
-                .price(amount)
-                .status(Status.ACTIVE)
-                .version(1)
-                .build();
-        try{
-            Book book = bookService.updateBook(bookUpdationRequest);
-            System.out.println(book);
-        } catch (Exception e){
-            e.printStackTrace();
-        }
+    public void addBook() throws DbException {
+        BookCreationRequest bookCreationRequest = BookRequestUtil.getValidBookCreationRequest();
+        bookService.addBook(bookCreationRequest);
+        verify(bookdao, times(1)).insert(any(Book.class));
     }
 
     @Test
-    void getBook() {
-        try{
-            Book book = bookService.getBook("5f0d452951b6d6035b06b969");
-            System.out.println(book);
-        } catch (Exception e){
-            e.printStackTrace();
-        }
+    public void updateBook() throws DbException, NotFoundException {
+        BookUpdationRequest bookUpdationRequest = BookRequestUtil.getValidBookUpdationRequest();
+        bookService.updateBook(bookUpdationRequest);
+        verify(bookdao, times(1)).save(any(Book.class));
     }
 
     @Test
-    void searchMedia() {
-        try{
-            List<String> titles= bookService.searchMedia("0987654321");
-            System.out.println("size of media posts : "+titles.size());
-            System.out.println(titles);
-        } catch (Exception e){
-            e.printStackTrace();
-        }
+    public void getBook() throws NotFoundException {
+        Book book = bookService.getBook("5f0d452951b6d6035b06b969");
+        Assert.assertEquals("Book1", book.getTitle());
     }
 
     @Test
-    void regex() {
+    public void search() throws DbException {
+        bookService.search(BookRequestUtil.getValidBookSearchRequest());
+        verify(bookdao, times(1)).search(any(SearchRequest.class));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void searchMedia() throws Exception {
+        List<String> titles = bookService.searchMedia("0987654321");
+        System.out.println("size of media posts : " + titles.size());
+        System.out.println(titles);
+    }
+
+    @Test()
+    public void searchMediawithMediaPostsEmpty() throws Exception {
+        when(bookdao.search(SearchRequestBuilder.build("0987654321"))).thenReturn(Collections.singletonList(BookRequestUtil.getBookWithId()));
+        when(mediaPostService.getMediaPosts()).thenReturn(new ArrayList<>());
+        List<String> titles = bookService.searchMedia("0987654321");
+        Assert.assertEquals(0, titles.size());
+    }
+
+    @Test()
+    public void searchMediawithMock() throws Exception {
+        when(bookdao.search(SearchRequestBuilder.build("0987654321"))).thenReturn(Collections.singletonList(BookRequestUtil.getBookWithId()));
+        when(mediaPostService.getMediaPosts()).thenReturn(BookRequestUtil.getMediaPosts());
+        List<String> titles = bookService.searchMedia("0987654321");
+        Assert.assertEquals(3, titles.size());
+    }
+
+    /**
+     * (?i) for case insensitive
+     */
+
+    @Test
+    public void regex() {
         String para = "nisi error delectus possimus ut eligendi vitae placeat eos harum cupiditate facilis reprehenderit voluptatem beatae nmodi ducimus quo illum voluptas eligendi net nobis quia fugit";
         List<String> stringList = new ArrayList<>();
         stringList.add("Delectus possimus");
         stringList.add("FJAKFJDLF");
-        String regex = String.format("(?i)(%s)", String.join("|",stringList));
+        String regex = String.format("(?i)(%s)", String.join("|", stringList));
         Pattern pt = Pattern.compile(regex);
         Matcher match = pt.matcher(para);
         System.out.println(match.find());

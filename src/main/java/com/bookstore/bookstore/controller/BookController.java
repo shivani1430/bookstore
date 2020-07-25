@@ -5,11 +5,11 @@ import com.bookstore.bookstore.model.Order;
 import com.bookstore.bookstore.pojo.apiResponse.BaseResponse;
 import com.bookstore.bookstore.pojo.apiRequest.BookCreationRequest;
 import com.bookstore.bookstore.pojo.apiRequest.BookSearchRequest;
-import com.bookstore.bookstore.pojo.apiRequest.OrderCreationDocument;
+import com.bookstore.bookstore.pojo.apiRequest.OrderCreationRequest;
 import com.bookstore.bookstore.service.IBookService;
 import com.bookstore.bookstore.service.IOrderService;
 import com.bookstore.bookstore.utils.GenericUtils;
-import com.bookstore.bookstore.validators.BookRequestValidator;
+import com.bookstore.bookstore.validators.RequestValidator;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,14 +34,11 @@ public class BookController {
     @Autowired
     private IOrderService orderService;
 
-    @Autowired
-    private BookRequestValidator inputValidator;
-
     @PostMapping(value = "/add")
     public BaseResponse addBook(@RequestBody BookCreationRequest bookCreationRequest) {
         log.info("BookController:addBook - request : {}", bookCreationRequest);
         try {
-            inputValidator.validate(bookCreationRequest);
+            RequestValidator.validate(bookCreationRequest);
             Book book = bookService.addBook(bookCreationRequest);
             return new BaseResponse(book);
         } catch (IllegalArgumentException ex) {
@@ -57,7 +54,7 @@ public class BookController {
     public BaseResponse search(@RequestBody BookSearchRequest bookSearchRequest) {
         log.info("BookController:search - request : {}", bookSearchRequest);
         try {
-            inputValidator.validate(bookSearchRequest);
+            RequestValidator.validate(bookSearchRequest);
             List<Book> books = bookService.search(bookSearchRequest);
             return new BaseResponse(books);
         } catch (IllegalArgumentException ex) {
@@ -89,17 +86,17 @@ public class BookController {
     }
 
     @PostMapping(value = "/buy")
-    public BaseResponse createOrder(@RequestBody OrderCreationDocument orderCreationDocument) {
-        log.info("BookController:createOrder - request : {}", orderCreationDocument);
+    public BaseResponse createOrder(@RequestBody OrderCreationRequest orderCreationRequest) {
+        log.info("BookController:createOrder - request : {}", orderCreationRequest);
         try {
-            inputValidator.validate(orderCreationDocument);
-            Order order = orderService.createOrder(orderCreationDocument);
+            RequestValidator.validate(orderCreationRequest);
+            Order order = orderService.createOrder(orderCreationRequest);
             return new BaseResponse(order);
         } catch (IllegalArgumentException ex) {
-            log.error("BookController:createOrder - IllegalArgumentException while adding order : {}, exception : {} ", orderCreationDocument, ex.getMessage());
+            log.error("BookController:createOrder - IllegalArgumentException while adding order : {}, exception : {} ", orderCreationRequest, ex.getMessage());
             return new BaseResponse(ex.getMessage(), HttpStatus.BAD_REQUEST);
         } catch (Exception ex) {
-            log.error("BookController:createOrder - Exception while adding order : {}, exception : {} ", orderCreationDocument, ex.getMessage());
+            log.error("BookController:createOrder - Exception while adding order : {}, exception : {} ", orderCreationRequest, ex.getMessage());
             return new BaseResponse(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

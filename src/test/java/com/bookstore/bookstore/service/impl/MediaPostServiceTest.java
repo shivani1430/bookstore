@@ -1,26 +1,31 @@
 package com.bookstore.bookstore.service.impl;
 
-import com.bookstore.bookstore.pojo.MediaPost;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-
-import java.util.List;
+import com.bookstore.bookstore.manager.RestApiManager;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.springframework.test.context.junit4.SpringRunner;
 
 
 /**
  * @author shivani_reddy
  */
 
-@SpringBootTest
-class MediaPostServiceTest {
+@RunWith(SpringRunner.class)
+public class MediaPostServiceTest {
 
-    @Autowired
+    @InjectMocks
     MediaPostService mediaPostService;
 
-    @Test
-    void getMediaPosts() throws Exception {
-        List<MediaPost> mediaPostList = mediaPostService.getMediaPosts();
-        System.out.println(mediaPostList);
+    @Mock
+    private RestApiManager restApiManager;
+
+    private ObjectMapper objectMapper = new ObjectMapper();
+
+    @Test(expected = Exception.class)
+    public void getMediaPosts() throws Exception {
+        mediaPostService.getMediaPosts();
     }
 }

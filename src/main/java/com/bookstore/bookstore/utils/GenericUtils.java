@@ -5,8 +5,8 @@ package com.bookstore.bookstore.utils;
  */
 public class GenericUtils {
 
-    public static boolean isStringEmpty(String text){
-        if(text == null || text.isEmpty()){
+    public static boolean isStringEmpty(String text) {
+        if (text == null || text.trim().isEmpty()) {
             return true;
         }
         return false;

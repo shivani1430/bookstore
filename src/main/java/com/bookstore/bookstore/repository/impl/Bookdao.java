@@ -33,6 +33,10 @@ public class Bookdao implements Idao<Book> {
     public Book insert(Book book) throws DbException {
         try {
             book = mongoOperations.insert(book);
+            if (book == null) {
+                log.error("Bookdao:insert - insert operation failed for :{}", book);
+                throw new DbException("insert operation failed");
+            }
             return book;
         } catch (Exception e) {
             log.error("Bookdao:insert - insert operation failed for :{}, error : {}", book, e.getMessage());

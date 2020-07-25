@@ -29,6 +29,9 @@ public class MediaPostService {
 
     public List<MediaPost> getMediaPosts() throws Exception {
         String response = restApiManager.exchange(url, HttpMethod.GET, null, String.class);
+        if (response == null) {
+            throw new Exception("internal server error");
+        }
         return objectMapper.readValue(response, new TypeReference<List<MediaPost>>() {
         });
     }
