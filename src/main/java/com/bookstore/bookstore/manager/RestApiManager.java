@@ -21,14 +21,15 @@ public class RestApiManager {
     @Autowired
     private RestTemplate restTemplate;
 
-    public <T> T exchange(String fullUrl, HttpMethod method, HttpEntity httpEntity, Class<T> responseClassType) throws Exception{
+    public <T> T exchange(String fullUrl, HttpMethod method, HttpEntity httpEntity, Class<T> responseClassType) throws Exception {
+        log.info("RestApiManager:exchange - api call with url : " + fullUrl + ", httpEntity : " + httpEntity + ", method : " + method);
 
         ResponseEntity<T> responseEntity;
         try {
             responseEntity = restTemplate.exchange(fullUrl, method, httpEntity, responseClassType);
             return responseEntity.getBody();
         } catch (Exception e) {
-            log.info("RestApiManager:exchange - Exception while making api call with url : " + fullUrl + ", httpEntity : " + httpEntity + ", method : " + method + ", error :" + e);
+            log.error("RestApiManager:exchange - Exception while making api call with url : " + fullUrl + ", httpEntity : " + httpEntity + ", method : " + method + ", error :" + e);
             throw new Exception("internal server error");
         }
     }
