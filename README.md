@@ -2,7 +2,11 @@
 
 Spring Boot based implementation of a Bookstore.
 
-![Book Store Flow](/docs/flow2.png "Book Store Flow")
+![High level design](/docs/hflow.png "High level design")
+
+## Book store Zoom in
+
+![Book Store UML](/docs/lflow.png "Book Store UML")
 
 ## Requirments
 
