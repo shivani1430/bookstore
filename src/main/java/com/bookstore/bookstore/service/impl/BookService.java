@@ -4,13 +4,15 @@ import com.bookstore.bookstore.builders.SearchRequestBuilder;
 import com.bookstore.bookstore.exceptions.DbException;
 import com.bookstore.bookstore.exceptions.NotFoundException;
 import com.bookstore.bookstore.model.Book;
+import com.bookstore.bookstore.model.pojo.Stock;
 import com.bookstore.bookstore.pojo.apiRequest.BookCreationRequest;
 import com.bookstore.bookstore.pojo.apiRequest.BookSearchRequest;
 import com.bookstore.bookstore.pojo.apiRequest.BookUpdationRequest;
 import com.bookstore.bookstore.pojo.MediaPost;
-import com.bookstore.bookstore.repository.Idao;
+import com.bookstore.bookstore.repository.Bookdao;
 import com.bookstore.bookstore.service.IBookService;
-import com.bookstore.bookstore.utils.GenericUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -26,21 +28,29 @@ import java.util.stream.Collectors;
 @Service
 public class BookService implements IBookService {
 
+    private Logger log = LogManager.getLogger(BookService.class);
+
     @Autowired
-    private Idao<Book> bookdao;
+    private Bookdao bookdao;
 
     @Autowired
     private MediaPostService mediaPostService;
 
     @Override
     public Book addBook(BookCreationRequest bookCreationRequest) throws DbException {
+        Stock stock = Stock.builder()
+                .stockTotal(bookCreationRequest.getStock())
+                .stockAvailable(bookCreationRequest.getStock())
+                .build();
         Book book = Book.builder()
                 .isbn(bookCreationRequest.getIsbn())
                 .title(bookCreationRequest.getTitle())
                 .author(bookCreationRequest.getAuthor())
                 .description(bookCreationRequest.getDescription())
                 .price(bookCreationRequest.getPrice())
+                .stock(stock)
                 .status(bookCreationRequest.getStatus())
+                .inventoryTransactionList(new ArrayList<>())
                 .createdAt(new Date())
                 .updatedAt(new Date())
                 .build();
@@ -55,14 +65,22 @@ public class BookService implements IBookService {
         book.setDescription(bookUpdationRequest.getDescription());
         book.setPrice(bookUpdationRequest.getPrice());
         book.setStatus(bookUpdationRequest.getStatus());
+        book.getStock().setStockTotal(
+                book.getStock().getStockTotal() + bookUpdationRequest.getStockToAdd());
+        book.getStock().setStockAvailable(
+                book.getStock().getStockAvailable() + bookUpdationRequest.getStockToAdd());
         book.setUpdatedAt(new Date());
-        book.setVersion(bookUpdationRequest.getVersion());
         return bookdao.save(book);
     }
 
     @Override
     public Book getBook(String id) throws NotFoundException {
         return bookdao.get(id);
+    }
+
+    @Override
+    public List<Book> bulkGet(List<String> ids) throws DbException {
+        return bookdao.bulkGet(ids);
     }
 
     @Override
@@ -78,8 +96,7 @@ public class BookService implements IBookService {
         }
         List<MediaPost> mediaPosts = mediaPostService.getMediaPosts();
         List<String> bookTitles = bookList.stream()
-                .filter(book -> !GenericUtils.isStringEmpty(book.getTitle().trim()))
-                .map(book -> book.getTitle().trim()).collect(Collectors.toList());
+                .map(Book::getTitle).collect(Collectors.toList());
 
         String regex = String.format("(?i)(%s)", String.join("|", bookTitles));
         Pattern pt = Pattern.compile(regex);
@@ -91,4 +108,5 @@ public class BookService implements IBookService {
                 })
                 .map(MediaPost::getTitle).collect(Collectors.toList());
     }
+
 }

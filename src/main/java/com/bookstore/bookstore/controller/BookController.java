@@ -91,6 +91,7 @@ public class BookController {
         try {
             RequestValidator.validate(orderCreationRequest);
             Order order = orderService.createOrder(orderCreationRequest);
+            order = orderService.storeCashTransaction(order.getOrderId(), orderCreationRequest.getTotalAmount());
             return new BaseResponse(order);
         } catch (IllegalArgumentException ex) {
             log.error("BookController:createOrder - IllegalArgumentException while adding order : {}, exception : {} ", orderCreationRequest, ex.getMessage());

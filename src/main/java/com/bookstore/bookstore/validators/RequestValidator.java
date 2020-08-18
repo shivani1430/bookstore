@@ -5,6 +5,7 @@ import com.bookstore.bookstore.pojo.apiRequest.BookCreationRequest;
 import com.bookstore.bookstore.pojo.apiRequest.BookSearchRequest;
 import com.bookstore.bookstore.pojo.apiRequest.OrderCreationRequest;
 import com.bookstore.bookstore.utils.GenericUtils;
+import org.springframework.util.CollectionUtils;
 
 /**
  * @author shivani_reddy
@@ -17,6 +18,7 @@ public class RequestValidator {
                 || GenericUtils.isStringEmpty(request.getTitle())) {
             throw new IllegalArgumentException("isbn or title is missing");
         }
+        request.setTitle(request.getTitle().trim());
         if (request.getPrice() == null) {
             throw new IllegalArgumentException("price is missing");
         } else {
@@ -38,6 +40,12 @@ public class RequestValidator {
     }
 
     public static void validate(OrderCreationRequest orderCreationRequest) {
+        if (GenericUtils.isStringEmpty(orderCreationRequest.getUserId())) {
+            throw new IllegalArgumentException("Missing userId");
+        }
+        if (CollectionUtils.isEmpty(orderCreationRequest.getOrderItems())) {
+            throw new IllegalArgumentException("empty OrderItems");
+        }
     }
 
 }

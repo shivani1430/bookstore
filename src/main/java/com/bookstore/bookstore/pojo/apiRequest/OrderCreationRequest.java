@@ -1,10 +1,13 @@
 package com.bookstore.bookstore.pojo.apiRequest;
 
-import com.bookstore.bookstore.model.pojo.User;
+import com.bookstore.bookstore.model.pojo.Amount;
+import com.bookstore.bookstore.model.pojo.OrderItem;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.List;
 
 /**
  * @author shivani_reddy
@@ -16,7 +19,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class OrderCreationRequest {
 
-    private User user;
-    private String bookId;
-    private String transactionId;
+    private String userId;
+    private List<OrderItem> orderItems;
+    private String paymentType;
+    private Amount totalAmount;
 }

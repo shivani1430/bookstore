@@ -2,10 +2,7 @@ package com.bookstore.bookstore.testUtils;
 
 import com.bookstore.bookstore.model.Book;
 import com.bookstore.bookstore.model.Order;
-import com.bookstore.bookstore.model.pojo.Amount;
-import com.bookstore.bookstore.model.pojo.Currency;
-import com.bookstore.bookstore.model.pojo.Status;
-import com.bookstore.bookstore.model.pojo.User;
+import com.bookstore.bookstore.model.pojo.*;
 import com.bookstore.bookstore.pojo.MediaPost;
 import com.bookstore.bookstore.pojo.apiRequest.BookCreationRequest;
 import com.bookstore.bookstore.pojo.apiRequest.BookSearchRequest;
@@ -13,6 +10,7 @@ import com.bookstore.bookstore.pojo.apiRequest.BookUpdationRequest;
 import com.bookstore.bookstore.pojo.apiRequest.OrderCreationRequest;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -33,6 +31,7 @@ public class BookRequestUtil {
                 .author("author2")
                 .description("description2")
                 .price(amount)
+                .stock(10)
                 .status(Status.ACTIVE)
                 .build();
     }
@@ -49,7 +48,7 @@ public class BookRequestUtil {
                 .description("description2")
                 .price(amount)
                 .status(Status.ACTIVE)
-                .version(1)
+                .stockToAdd(2)
                 .build();
     }
 
@@ -64,6 +63,10 @@ public class BookRequestUtil {
                 .amount(20.0)
                 .currency(Currency.INR)
                 .build();
+        Stock stock = Stock.builder()
+                .stockTotal(20)
+                .stockAvailable(20)
+                .build();
         return Book.builder()
                 .id("5f0d452951b6d6035b06b969")
                 .isbn("0987654321")
@@ -71,27 +74,12 @@ public class BookRequestUtil {
                 .author("author2")
                 .description("description2")
                 .price(amount)
+                .stock(stock)
                 .status(Status.ACTIVE)
+                .inventoryTransactionList(new ArrayList<>())
                 .createdAt(new Date())
                 .updatedAt(new Date())
                 .version(1)
-                .build();
-    }
-
-    public static Book getBook() {
-        Amount amount = Amount.builder()
-                .amount(20.0)
-                .currency(Currency.INR)
-                .build();
-        return Book.builder()
-                .isbn("0987654321")
-                .title("Book1")
-                .author("author2")
-                .description("description2")
-                .price(amount)
-                .status(Status.ACTIVE)
-                .createdAt(new Date())
-                .updatedAt(new Date())
                 .build();
     }
 
@@ -116,31 +104,38 @@ public class BookRequestUtil {
     }
 
     public static OrderCreationRequest getValidOrderCreationRequest() {
-        User user = User.builder()
-                .userId("userid")
-                .email("shivani@gmail.com")
-                .phoneNo("0987654321")
-                .name("shivani")
+        Amount amount = Amount.builder()
+                .amount(20.0)
+                .currency(Currency.INR)
+                .build();
+        OrderItem orderItem = OrderItem.builder()
+                .bookId("5f0d452951b6d6035b06b969")
+                .quantity(1)
                 .build();
         return OrderCreationRequest.builder()
-                .bookId("5f0d452951b6d6035b06b969")
-                .transactionId("1234567890")
-                .user(user)
+                .userId("userid")
+                .orderItems(Collections.singletonList(orderItem))
+                .paymentType("cash")
+                .totalAmount(amount)
                 .build();
     }
 
     public static Order getOrderWithId() {
-        User user = User.builder()
-                .userId("userid")
-                .email("shivani@gmail.com")
-                .phoneNo("0987654321")
-                .name("shivani")
+        OrderItem orderItem = OrderItem.builder()
+                .bookId("5f0d452951b6d6035b06b969")
+                .quantity(1)
+                .build();
+        Amount amount = Amount.builder()
+                .currency(Currency.INR)
+                .amount(20.0)
                 .build();
         return Order.builder()
                 .orderId("5f0d9bb6ce579865d2155756")
-                .user(user)
-                .bookId("5f0d452951b6d6035b06b969")
-                .transactionId("1234567890")
+                .userId("userid")
+                .orderItems(Collections.singletonList(orderItem))
+                .orderStatus(OrderStatus.Confirmed)
+                .paymentType("cash")
+                .totalAmount(amount)
                 .version(1)
                 .build();
 

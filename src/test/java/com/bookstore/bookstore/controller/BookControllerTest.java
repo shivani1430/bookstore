@@ -84,7 +84,7 @@ public class BookControllerTest {
                 .characterEncoding("UTF-8")
                 .content(objectMapper.writeValueAsString(bookSearchRequest)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.size()",is(1)));
+                .andExpect(jsonPath("$.size()", is(1)));
 
     }
 
@@ -108,7 +108,7 @@ public class BookControllerTest {
 
         mvc.perform(get("/book/media_search?isbn=0987654321"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.size()",is(1)));
+                .andExpect(jsonPath("$.size()", is(1)));
 
     }
 
@@ -125,6 +125,7 @@ public class BookControllerTest {
         OrderCreationRequest orderCreationRequest = BookRequestUtil.getValidOrderCreationRequest();
         Order order = BookRequestUtil.getOrderWithId();
         when(orderService.createOrder(orderCreationRequest)).thenReturn(order);
+        when(orderService.storeCashTransaction(order.getOrderId(), orderCreationRequest.getTotalAmount())).thenReturn(order);
 
         mvc.perform(post("/book/buy")
                 .contentType(MediaType.APPLICATION_JSON)

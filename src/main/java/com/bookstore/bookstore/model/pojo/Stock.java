@@ -8,14 +8,14 @@ import lombok.NoArgsConstructor;
 /**
  * @author shivani_reddy
  */
-
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class User {
-    private String userId;
-    private String name;
-    private String email;
-    private String phoneNo;
+public class Stock {
+    private int stockTotal;
+    private int stockBlocked;
+    private int stockBooked;
+    private int stockAvailable;
+
 }

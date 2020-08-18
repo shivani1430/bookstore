@@ -9,6 +9,8 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 public enum SearchField {
 
+    ID("id"),
+
     ISBN("isbn"),
 
     TITLE("title"),

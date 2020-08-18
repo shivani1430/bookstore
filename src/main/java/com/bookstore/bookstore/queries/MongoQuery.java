@@ -7,6 +7,8 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.util.CollectionUtils;
 
+import java.util.List;
+
 /**
  * @author shivani_reddy
  */
@@ -28,5 +30,11 @@ public class MongoQuery {
         }
         return searchQuery;
 
+    }
+
+    public static Query buildQuery(List<String> ids) {
+        Query searchQuery = Query.query(Criteria.where(DataSourceConstants.BOOK_STATUS_FIELD_NAME).is(Status.ACTIVE.toString()));
+        searchQuery.addCriteria(Criteria.where(DataSourceConstants.BOOK_ID_FIELD_NAME).in(ids));
+        return searchQuery;
     }
 }

@@ -20,6 +20,6 @@ public class BookUpdationRequest {
     private String author;
     private String description;
     private Amount price;
+    private int stockToAdd;
     private Status status;
-    private int version;
 }

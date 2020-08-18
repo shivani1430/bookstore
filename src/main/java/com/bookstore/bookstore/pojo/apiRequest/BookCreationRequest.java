@@ -22,5 +22,6 @@ public class BookCreationRequest {
     private String author;
     private String description;
     private Amount price;
+    private int stock;
     private Status status;
 }

@@ -4,10 +4,12 @@ import com.bookstore.bookstore.builders.SearchRequestBuilder;
 import com.bookstore.bookstore.exceptions.DbException;
 import com.bookstore.bookstore.exceptions.NotFoundException;
 import com.bookstore.bookstore.model.Book;
+import com.bookstore.bookstore.model.pojo.InventoryStatus;
+import com.bookstore.bookstore.model.pojo.InventoryTransaction;
 import com.bookstore.bookstore.pojo.apiRequest.BookCreationRequest;
 import com.bookstore.bookstore.pojo.apiRequest.BookUpdationRequest;
 import com.bookstore.bookstore.pojo.search.SearchRequest;
-import com.bookstore.bookstore.repository.Idao;
+import com.bookstore.bookstore.repository.Bookdao;
 import com.bookstore.bookstore.testUtils.BookRequestUtil;
 import org.junit.Assert;
 import org.junit.Before;
@@ -22,6 +24,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -38,7 +41,7 @@ public class BookServiceTest {
     private BookService bookService;
 
     @Mock
-    private Idao<Book> bookdao;
+    private Bookdao bookdao;
 
     @Mock
     private MediaPostService mediaPostService;
@@ -46,6 +49,7 @@ public class BookServiceTest {
     @Before
     public void setUp() throws Exception {
         when(bookdao.get("5f0d452951b6d6035b06b969")).thenReturn(BookRequestUtil.getBookWithId());
+        when(bookdao.bulkGet(Collections.singletonList("5f0d452951b6d6035b06b969"))).thenReturn(Collections.singletonList(BookRequestUtil.getBookWithId()));
     }
 
     @Test
@@ -69,6 +73,12 @@ public class BookServiceTest {
     }
 
     @Test
+    public void bulkGet() throws DbException {
+        List<Book> books = bookService.bulkGet(Collections.singletonList("5f0d452951b6d6035b06b969"));
+        Assert.assertEquals(books.size(), 1);
+    }
+
+    @Test
     public void search() throws DbException {
         bookService.search(BookRequestUtil.getValidBookSearchRequest());
         verify(bookdao, times(1)).search(any(SearchRequest.class));
@@ -77,8 +87,6 @@ public class BookServiceTest {
     @Test(expected = IllegalArgumentException.class)
     public void searchMedia() throws Exception {
         List<String> titles = bookService.searchMedia("0987654321");
-        System.out.println("size of media posts : " + titles.size());
-        System.out.println(titles);
     }
 
     @Test()
@@ -95,6 +103,56 @@ public class BookServiceTest {
         when(mediaPostService.getMediaPosts()).thenReturn(BookRequestUtil.getMediaPosts());
         List<String> titles = bookService.searchMedia("0987654321");
         Assert.assertEquals(3, titles.size());
+    }
+
+    @Test
+    public void testBlockInventory() {
+        Book book = BookRequestUtil.getBookWithId();
+        book.blockInventory("orderId", 15);
+        Assert.assertEquals(book.getStock().getStockAvailable(), 5);
+        Assert.assertEquals(book.getStock().getStockBlocked(), 15);
+        List<InventoryTransaction> inventoryTransaction = book.getInventoryTransactionList().stream()
+                .filter(txn -> txn.getOrderId().equals("orderId") && txn.getInventoryStatus().equals(InventoryStatus.BLOCKED)).collect(Collectors.toList());
+        Assert.assertEquals(inventoryTransaction.size(), 1);
+    }
+
+    @Test
+    public void testBookInventory() {
+        Book book = BookRequestUtil.getBookWithId();
+        book.getStock().setStockAvailable(5);
+        book.getStock().setStockBlocked(15);
+        book.bookInventory("orderId", 15);
+        Assert.assertEquals(book.getStock().getStockAvailable(), 5);
+        Assert.assertEquals(book.getStock().getStockBooked(), 15);
+        Assert.assertEquals(book.getStock().getStockBlocked(), 0);
+        List<InventoryTransaction> inventoryTransaction = book.getInventoryTransactionList().stream()
+                .filter(txn -> txn.getOrderId().equals("orderId") && txn.getInventoryStatus().equals(InventoryStatus.BOOKED)).collect(Collectors.toList());
+        Assert.assertEquals(inventoryTransaction.size(), 1);
+    }
+
+    @Test
+    public void testUnblockInventory() {
+        Book book = BookRequestUtil.getBookWithId();
+        book.getStock().setStockAvailable(5);
+        book.getStock().setStockBlocked(15);
+        book.getInventoryTransactionList().add(new InventoryTransaction("orderId", InventoryStatus.BLOCKED, 15));
+        book.unblockInventory("orderId", 15);
+        Assert.assertEquals(book.getStock().getStockAvailable(), 20);
+        Assert.assertEquals(book.getStock().getStockBlocked(), 0);
+        List<InventoryTransaction> inventoryTransaction = book.getInventoryTransactionList().stream()
+                .filter(txn -> txn.getOrderId().equals("orderId") && txn.getInventoryStatus().equals(InventoryStatus.UN_BLOCKED)).collect(Collectors.toList());
+        Assert.assertEquals(inventoryTransaction.size(), 1);
+    }
+
+    @Test
+    public void testUnblockInventoryWhenNotBlocked() {
+        Book book = BookRequestUtil.getBookWithId();
+        book.unblockInventory("orderId", 15);
+        Assert.assertEquals(book.getStock().getStockAvailable(), 20);
+        Assert.assertEquals(book.getStock().getStockBlocked(), 0);
+        List<InventoryTransaction> inventoryTransaction = book.getInventoryTransactionList().stream()
+                .filter(txn -> txn.getOrderId().equals("orderId") && txn.getInventoryStatus().equals(InventoryStatus.UN_BLOCKED)).collect(Collectors.toList());
+        Assert.assertEquals(inventoryTransaction.size(), 0);
     }
 
     /**

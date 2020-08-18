@@ -3,8 +3,11 @@ package com.bookstore.bookstore.validators;
 
 import com.bookstore.bookstore.pojo.apiRequest.BookCreationRequest;
 import com.bookstore.bookstore.pojo.apiRequest.BookSearchRequest;
+import com.bookstore.bookstore.pojo.apiRequest.OrderCreationRequest;
 import com.bookstore.bookstore.testUtils.BookRequestUtil;
 import org.junit.Test;
+
+import java.util.ArrayList;
 
 /**
  * @author shivani_reddy
@@ -43,5 +46,33 @@ public class RequestValidatorTest {
     public void testBookSearchRequestwithAllEmpty() {
         BookSearchRequest bookSearchRequest = BookSearchRequest.builder().build();
         RequestValidator.validate(bookSearchRequest);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testOrderCreationRequestwithUserNull() {
+        OrderCreationRequest orderCreationRequest = BookRequestUtil.getValidOrderCreationRequest();
+        orderCreationRequest.setUserId(null);
+        RequestValidator.validate(orderCreationRequest);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testOrderCreationRequestwithUserEmpty() {
+        OrderCreationRequest orderCreationRequest = BookRequestUtil.getValidOrderCreationRequest();
+        orderCreationRequest.setUserId(" ");
+        RequestValidator.validate(orderCreationRequest);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testOrderCreationRequestwithOrderItemsEmpty() {
+        OrderCreationRequest orderCreationRequest = BookRequestUtil.getValidOrderCreationRequest();
+        orderCreationRequest.setOrderItems(new ArrayList<>());
+        RequestValidator.validate(orderCreationRequest);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testOrderCreationRequestwithOrderItemsNull() {
+        OrderCreationRequest orderCreationRequest = BookRequestUtil.getValidOrderCreationRequest();
+        orderCreationRequest.setOrderItems(null);
+        RequestValidator.validate(orderCreationRequest);
     }
 }
