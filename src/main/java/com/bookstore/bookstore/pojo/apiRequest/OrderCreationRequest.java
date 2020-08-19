@@ -21,6 +21,5 @@ public class OrderCreationRequest {
 
     private String userId;
     private List<OrderItem> orderItems;
-    private String paymentType;
     private Amount totalAmount;
 }

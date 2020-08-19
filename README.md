@@ -18,7 +18,8 @@ Spring Boot based implementation of a Bookstore.
 To run the application:
 
 * start mongo server
-* run the below command
+* run the below command for install dependencies
+* run the application
 
 ```
   mvn clean install
@@ -40,12 +41,28 @@ curl --location --request POST 'http://localhost:8080/book/add' \
 ### Search book based on ISBN/Title/Author
 curl --location --request POST 'http://localhost:8080/book/search' \
 --header 'Content-Type: application/json' \
---data-raw '{"isbn":"0987654321","title":"exp", "author":"kate"}'
+--data-raw '{"isbn":"0987654321"}'
 
 ### Search media coverage about a book, given its ISBN
-curl --location --request GET 'http://localhost:8080/book/media_search?isbn=1234567890'
+curl --location --request GET 'http://localhost:8080/book/media_search?isbn=0987654321'
 
 ### Buy a book
 curl --location --request POST 'http://localhost:8080/book/buy' \
---header 'Content-Type: application/json' \
---data-raw '{"bookId":"5f0d9ba5d78d8873e2d71d5a","transactionId":"0987654321","user":{"userId":"userId","email":"shivani@gmail.com","phoneNo":"0987654321","name":"shivani"}}'
+        --header 'Content-Type: application/json' \
+        --data-raw '{
+        "userId": "userId",
+        "orderItems": [
+        {
+        "bookId": "5f3ca5bc2115a84e9c11a074",
+        "quantity": 2
+        },
+        {
+        "bookId": "5f3ca59f2115a84e9c11a073",
+        "quantity": 1
+        }
+        ],
+        "totalAmount": {
+        "amount": 40,
+        "currency": "INR"
+        }
+        }'

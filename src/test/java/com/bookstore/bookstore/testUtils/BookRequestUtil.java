@@ -115,7 +115,6 @@ public class BookRequestUtil {
         return OrderCreationRequest.builder()
                 .userId("userid")
                 .orderItems(Collections.singletonList(orderItem))
-                .paymentType("cash")
                 .totalAmount(amount)
                 .build();
     }

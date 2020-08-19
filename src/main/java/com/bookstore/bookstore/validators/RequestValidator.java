@@ -46,6 +46,13 @@ public class RequestValidator {
         if (CollectionUtils.isEmpty(orderCreationRequest.getOrderItems())) {
             throw new IllegalArgumentException("empty OrderItems");
         }
+        if (orderCreationRequest.getTotalAmount() == null) {
+            throw new IllegalArgumentException("price is missing");
+        } else {
+            if (orderCreationRequest.getTotalAmount().getCurrency() == null) {
+                throw new IllegalArgumentException("currency is missing");
+            }
+        }
     }
 
 }
